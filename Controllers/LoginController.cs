@@ -50,9 +50,7 @@ namespace WebTemplate.Controllers
                 expires: DateTime.Now.AddMinutes(15),
                 signingCredentials: credentials);
 
-
             return new JwtSecurityTokenHandler().WriteToken(token);
-
         }
 
         //To authenticate user
