@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Im8ZyBUHYvSOnKnD4xDNXjVETeB5nVHYiCg+yIb8P6o8kX4/t65H29Cy/iBQ7ldPBuMBvQ0nzpW67EWTBNP3Dg==",
+  "dgSpecHash": "7KrJ6IBRhhpNdX/d7l5Tnvk79m3h/ZJzPmvc7hfTHxba1Dkmea6N2kY4NoTT01IHwoY5OyKEs0DAecBPHcMntQ==",
   "success": true,
-  "projectFilePath": "D:\\Hoseini\\WebTemplate\\WebTemplate.csproj",
+  "projectFilePath": "D:\\Hoseini\\WebApiTemp\\WebTemplate.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Hoseini\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.5\\microsoft.aspnetcore.authentication.jwtbearer.7.0.5.nupkg.sha512",
     "C:\\Users\\Hoseini\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.5\\microsoft.aspnetcore.openapi.7.0.5.nupkg.sha512",

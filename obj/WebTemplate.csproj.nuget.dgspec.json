@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Hoseini\\WebTemplate\\WebTemplate.csproj": {}
+    "D:\\Hoseini\\WebApiTemp\\WebTemplate.csproj": {}
   },
   "projects": {
-    "D:\\Hoseini\\WebTemplate\\WebTemplate.csproj": {
+    "D:\\Hoseini\\WebApiTemp\\WebTemplate.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Hoseini\\WebTemplate\\WebTemplate.csproj",
+        "projectUniqueName": "D:\\Hoseini\\WebApiTemp\\WebTemplate.csproj",
         "projectName": "WebTemplate",
-        "projectPath": "D:\\Hoseini\\WebTemplate\\WebTemplate.csproj",
+        "projectPath": "D:\\Hoseini\\WebApiTemp\\WebTemplate.csproj",
         "packagesPath": "C:\\Users\\Hoseini\\.nuget\\packages\\",
-        "outputPath": "D:\\Hoseini\\WebTemplate\\obj\\",
+        "outputPath": "D:\\Hoseini\\WebApiTemp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
