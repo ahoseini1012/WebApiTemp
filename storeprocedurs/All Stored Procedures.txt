@@ -1,0 +1,426 @@
+USE [Fetrat.Zoghi]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_AddUsers]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 1402/03/22
+-- Description:	insert user details
+-- =============================================
+
+CREATE PROCEDURE [dbo].[SP_AddUsers]
+	@Username nvarchar(50),
+    @Password nvarchar(200), 
+    @FirstName NVARCHAR(50) = NULL, 
+    @LastName NVARCHAR(50) = NULL,
+	@MobileNumber NVARCHAR(50) = NULL,
+	@Email NVARCHAR(50) = NULL,
+	@IsVerifiedEmail bit null=0,
+	@IsActive bit null =1,
+    @responseMessage NVARCHAR(250) OUTPUT,
+	@returnToken int = 0 out
+AS
+declare @Guid UNIQUEIDENTIFIER = newid();
+
+begin
+	SET NOCOUNT ON
+    BEGIN TRY
+		begin tran
+        insert into dbo.[Users] (username, [password],[guid], FirstName, LastName, MobileNumber, Email, IsActive,IsVerifiedEmail)
+        values(@Username, HASHBYTES('SHA2_512', @Password + cast(@Guid as nvarchar(36))),@Guid, @FirstName, @LastName, @MobileNumber, @Email,@IsActive,@IsVerifiedEmail)
+        set @responseMessage = 'ok' 
+		set @returnToken = CAST(RAND()*1000000 as int);
+		declare @sendVerificationResponseMessage bit;
+		exec sp_SendVerificationEmail @Email , @returnToken ,@sendVerificationResponseMessage out			
+		commit tran
+    END TRY
+    BEGIN CATCH
+        SET @responseMessage=ERROR_MESSAGE() 
+		set @returnToken =0
+		rollback tran
+    END CATCH
+end
+GO
+/****** Object:  StoredProcedure [dbo].[sp_ChangePassword]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 14020331
+-- Description:	update user
+-- =============================================
+create     PROCEDURE [dbo].[sp_ChangePassword] 
+	@userId int,
+	@oldPassword varchar(200),
+	@newPassword varchar(200),
+	@responseMessage nvarchar(max) output,
+	@retVal int output
+
+AS
+BEGIN
+	-- check oldpass is correct or not
+	declare @hashpass nvarchar(250)
+	declare @salt NVARCHAR(36)
+	select @salt = Guid from Users where Id = @userId
+
+	select @hashpass = password from Users where Id = @userId and Password=HASHBYTES('SHA2_512', @oldPassword+CAST(@salt AS NVARCHAR(36)))
+	if @hashpass = HASHBYTES('SHA2_512', @oldPassword+CAST(@salt AS NVARCHAR(36)))
+		begin
+			-- update password
+			update dbo.Users set Password = HASHBYTES('SHA2_512', @newPassword + cast(@salt as nvarchar(36))) where id=@userId
+			set @responseMessage= 'Password has been changed successfully!'
+			set @retVal=1
+		end
+	else
+		begin 
+			set @responseMessage= 'Unfortunately password has not been changed!'
+			set @retVal=-1
+		end
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_getLogin]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 1402/03/24
+-- Description:	used for login by username and password
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_getLogin]
+	@Email nvarchar(50),
+	@Password nvarchar(50),
+	@responseMessage nvarchar(50) out,
+	@responseBoolean bit = 0 out
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	declare @userid int;
+	declare @userTable userTable
+	insert into @userTable
+	SELECT top 1 * from Users where Email = @Email
+
+	--check email is existed or not
+	if not exists (select top 1 * from @userTable where Email = @Email) 
+	begin
+		set @responseMessage=N'Email not found';
+		set @responseBoolean = 0
+		return 
+	end
+
+	--check email is verified or not
+	if not exists (select top 1 * from @userTable where Email = @Email and  IsVerifiedEmail=1) 
+	begin
+		set @responseMessage=N'Email is not verified';
+		set @responseBoolean = 0
+		return 
+	end
+
+	--check email and password is corrected or not
+	if not exists (SELECT top 1 * from @userTable where Email = @Email AND Password=HASHBYTES('SHA2_512', @Password + CAST (guid as nvarchar(150))) and IsVerifiedEmail=1)
+		begin
+			set @responseMessage=N'Email or Password is incorrect';
+			set @responseBoolean = 0
+			return 
+		end
+
+	select @userid = id from @userTable
+	declare @isFirstLogin bit;
+	if exists(select top 1 * from UserTokens where UserId=@userid) set @isFirstLogin=0 else set @isFirstLogin=1
+
+	if exists(SELECT top 1 * from @userTable)
+		begin
+			begin Tran
+				SET @responseBoolean=1  -- User successfully logged in
+				select id,Username,Guid,Email,FirstName,LastName,MobileNumber from @userTable
+			commit Tran
+		end
+	else 
+		SET @responseBoolean=0
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_getLogout]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 1402/04/10
+-- Description:	log out by refreshtoken
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_getLogout]
+	@RefreshToken nvarchar(50),
+	@UserId	bigint,
+	@responseMessage bit=0 out
+AS
+BEGIN
+	SET NOCOUNT ON;	
+	update UserTokens set IsValid=0  where UserId = @UserId AND RefreshToken=@RefreshToken
+	if(@@ROWCOUNT>0) 
+		SET @responseMessage= 1
+	else
+		SET @responseMessage= 0
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_getNewRefreshToken]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 1402/04/10
+-- Description:	get new refreshtoken by userid and old refreshtoken
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_getNewRefreshToken]
+	@userId bigint,
+	@RefreshTokenTimeout int,
+	@OldRefreshToken nvarchar(50),
+	@NewRefreshToken nvarchar(50),
+	@responseMessage bit = 0 out,
+	@returnedCreatedAt datetime out
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	declare @createdat datetime 
+	select @createdat=createdat from UserTokens 
+	set @createdat = DATEADD(mi, @RefreshTokenTimeout,@createdat )
+	declare @expireTime datetime = getdate()																		
+	declare @isNotExpired bit = 0																		
+	set @isNotExpired= case when @createdat>@expireTime  then  1 else 0 end		
+	if exists (select * from UserTokens where UserId = @userId and IsValid=1 and RefreshToken like @OldRefreshToken and @isNotExpired=1)
+		begin
+			begin tran
+				set @returnedCreatedAt = GETDATE()
+				print @NewRefreshToken
+				update UserTokens set RefreshToken=@NewRefreshToken , IsValid=1 , CreatedAt=@returnedCreatedAt where UserId=@userId
+				insert into LoginHistory (userId,logInDateTime) values(@userid,GETDATE())
+				set @responseMessage=1
+
+			commit tran
+		end
+	else
+			set @responseMessage=0
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_getUsers]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: <Create Date,,>
+-- Description:	get user
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_getUsers]
+	@Email nvarchar(50)=null,
+    @responseMessage NVARCHAR(250) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	declare @SqlCmd nvarchar(max)='SELECT top 1 us.Id,us.username,us.FirstName,us.LastName,us.Email,us.MobileNumber,us.IsActive from Users us where '
+	if LEN(@Email)>0 begin set @sqlcmd = @sqlcmd + ' Email like N'''+ @Email + ''' and ' end 
+
+	set @sqlcmd = TRIM(' and ' from @sqlcmd)
+	
+	--declare @user
+	exec SP_ExecuteSQL @SqlCmd;
+	print(@@rowcount)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_insertLoginHistoryAndUserTokens]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 1402/04/09
+-- Description:	used for store refreshtoken and LoginHistory into database
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_insertLoginHistoryAndUserTokens]
+	@Accesstoken nvarchar(50),
+	@RefreshToken nvarchar(50),
+	@UserId bigint,
+	@responseMessage nvarchar(50) out,
+	@responseBoolean bit = 0 out
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	declare @isFirstLogin bit;
+	if exists(select top 1 * from UserTokens where UserId=@UserId) set @isFirstLogin=0 else set @isFirstLogin=1
+		begin
+			begin Tran
+				SET @responseMessage='operation completed'
+				set @responseBoolean = 1
+				if(@isFirstLogin=1)
+					insert into UserTokens (UserId,RefreshToken,CreatedAt,IsValid) values(@userid,@RefreshToken,GETDATE(),1)
+				else
+					update UserTokens set RefreshToken=@RefreshToken , CreatedAt = GetDate(),IsValid=1 where UserId=@userid
+				insert into LoginHistory (userId,logInDateTime) values(@userid,GETDATE())
+			commit Tran
+			return
+		end
+			SET @responseMessage='unfortunately operation faild'
+			set @responseBoolean=0
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_ResetPassword]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 14020408
+-- Description:	to reset user's password
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_ResetPassword] 
+	@email nvarchar(100),
+	@newPassword varchar(200),
+	@token nvarchar (6),
+	@responseMessage bit=0 output
+
+AS
+BEGIN
+	declare @userId bigint = 0
+	--check token
+	select top 1 @userId = us.Id from Users us join EmailVerificationHistory ev on ev.Userid=us.Id 
+	where us.Email=@Email and ev.Token=@Token and GETDATE()<ev.expireDateTime  and ev.IsBurned=0
+	order by ev.Id desc 
+
+	--update password
+	declare @salt NVARCHAR(36)
+	select @salt = Guid from Users where Email = @email
+		begin
+			-- update password
+			begin tran
+				update dbo.Users set Password = HASHBYTES('SHA2_512', @newPassword + cast(@salt as nvarchar(36))) where Email = @email and Id=@userId
+				update EmailVerificationHistory set IsBurned=1 where Userid=@userId
+				set @responseMessage= 1
+			commit tran
+		end
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_SendVerificationEmail]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: <Create Date,,>
+-- Description:	insert verification record to EmailVerificationHistory
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_SendVerificationEmail]
+	@Email nvarchar(50)=null,
+	@Token int,
+    @responseMessage bit OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	declare @userTable userTable
+	insert into @userTable
+	select Id,Guid, Username,Email,FirstName,LastName,MobileNumber,IsActive,isverifiedemail from Users where Email like @Email
+	if exists(select * from @userTable) 
+		begin
+			declare @userid bigint;
+			select @userid = id from @userTable;
+			select * from @userTable
+			insert 
+				into EmailVerificationHistory (Userid,token,isburned,datetime,expireDatetime) 
+				values(@userid,@Token,0,GETDATE(),DATEADD( MINUTE,5,GETDATE() ));
+			set @responseMessage = 1;
+		end
+	else
+		set @responseMessage = 0;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_updateUser]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 14020331
+-- Description:	update user
+-- =============================================
+CREATE   PROCEDURE [dbo].[sp_updateUser] 
+	@Email varchar(50),
+	@MobileNumber varchar(50)=null,
+	@FirstName nvarchar(50)=null,
+	@LastName nvarchar(50)=null,
+	@responseMessage nvarchar(max) output
+
+AS
+BEGIN
+	declare @sqlCmd nvarchar(max)='update dbo.Users set '
+	if @MobileNumber is not null begin set @sqlCmd = @sqlCmd+' MobileNumber = N'''+ @MobileNumber +''' , ' end
+	if @FirstName is not null begin set @sqlCmd = @sqlCmd+ ' FirstName = N'''+ @FirstName +''' , ' end
+	if @LastName is not null  begin set @sqlCmd =  @sqlCmd+' LastName = N'''+ @LastName +''' , ' end
+	set @sqlCmd = Trim( ', ' from @sqlCmd);
+
+	declare @userid bigint ;
+	declare @userTable userTable;
+	insert into @userTable
+		SELECT top 1 id,Guid,Username,Email,FirstName,LastName,MobileNumber,IsActive,IsVerifiedEmail
+		from Users 
+		where Email = @Email
+
+	 select top 1 @userid = Id  from @userTable
+	 set @SqlCmd = @SqlCmd + ' output inserted.id where id='+cast( @userid as nvarchar)
+
+	 if @userid >0 
+	 begin
+		exec SP_ExecuteSQL @SqlCmd
+		set @responseMessage ='updated succesfully.'
+		SELECT top 1 * from Users us where id = @userid
+	 end
+	 else  set @responseMessage = 'no record updated!'
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_VerifyEmail]    Script Date: 7/1/2023 8:07:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: <Create Date,,>
+-- Description:	insert verification record to EmailVerificationHistory
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_VerifyEmail]
+	@Email nvarchar(50)=null,
+	@Token int,
+    @responseMessage bit OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	declare @verificationId bigint
+	select top 1 @verificationId=us.Id from Users us join EmailVerificationHistory ev on ev.Userid=us.Id 
+		where us.Email like @Email and ev.Token=@Token and GETDATE()<ev.expireDateTime order by ev.Id desc
+	if(@verificationId is not null) 
+		begin
+			begin tran
+				update Users set IsVerifiedEmail=1 where Id = @verificationId
+				update EmailVerificationHistory set IsBurned=1 where Userid=@verificationId
+				set @responseMessage = 1;
+			commit tran
+		end
+	else
+		set @responseMessage = 0;
+END
+GO

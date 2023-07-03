@@ -1,0 +1,249 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Fetratgram",
+    "dateExported": "2023-07-01T16:38:28.262Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "898f9221-9750-468d-857f-96ff4a3d9ec3",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/AddUser",
+            "url": "https://localhost:7276/api/v1/user/AddUser",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-06-29T16:44:33.904Z",
+            "modified": "2023-07-01T14:16:18.510Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"a.hoseini1012\",\n  \"password\": \"123456\",\n  \"firstName\": \"محمد حسین\",\n  \"lastName\": \"حسینی\",\n  \"email\": \"m.hoseini@gmail.com\",\n  \"mobileNumber\": \"09126344912\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "35d47408-0632-4014-88ed-b3a411817520",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/getUsers",
+            "url": "https://localhost:7276/api/v1/user/getusers",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-06-29T16:44:33.905Z",
+            "modified": "2023-07-01T14:21:21.076Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"email\": \"string\"\r\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "f6c42337-d763-4cd3-a37f-380ee1b7ee5f",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/getLogin",
+            "url": "https://localhost:7276/api/v1/user/getLogin",
+            "method": "POST",
+            "sortNum": 22500,
+            "created": "2023-06-29T16:44:33.906Z",
+            "modified": "2023-07-01T16:34:44.607Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"qwq\",\n  \"password\": \"q\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "1f95b06e-3230-4540-8261-003ab75ae2ec",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/GetNewTokens",
+            "url": "https://localhost:7276/api/v1/user/GetNewTokens",
+            "method": "POST",
+            "sortNum": 23750,
+            "created": "2023-07-01T14:22:27.900Z",
+            "modified": "2023-07-01T14:23:13.063Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"oldRefreshToken\": \"string\",\r\n  \"userId\": 0\r\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "c90f74ad-1087-4f3f-af3e-8106174a4c5c",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/logout",
+            "url": "https://localhost:7276/api/v1/user/logout",
+            "method": "POST",
+            "sortNum": 26250,
+            "created": "2023-07-01T15:09:25.214Z",
+            "modified": "2023-07-01T15:29:11.090Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"userId\": 3,\n  \"refreshToken\": \"6b73bbf4-002d-4ee3-af76-7822689fe5e6\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "bfa0ffa9-438a-4d1b-a4b7-044bea4ed326",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/UpdateUserByEmail",
+            "url": "https://localhost:7276/api/v1/User/UpdateUserByEmail",
+            "method": "POST",
+            "sortNum": 28750,
+            "created": "2023-07-01T14:23:46.315Z",
+            "modified": "2023-07-01T14:24:49.820Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"email\": \"string\",\r\n  \"firstName\": \"string\",\r\n  \"lastName\": \"string\",\r\n  \"mobileNumber\": \"string\"\r\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "9b79c036-35fc-434d-bfb2-0008e3483296",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/SendVerificationEmail",
+            "url": "https://localhost:7276/api/v1/User/SendVerificationEmail",
+            "method": "POST",
+            "sortNum": 29375,
+            "created": "2023-07-01T14:25:18.706Z",
+            "modified": "2023-07-01T14:26:41.112Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"email\": \"string\"\r\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "a7b7d2a5-eb28-4fb2-a45e-f0700295a94a",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/VerifyEmailByToken",
+            "url": "https://localhost:7276/api/v1/User/VerifyEmailByToken",
+            "method": "POST",
+            "sortNum": 29687.5,
+            "created": "2023-07-01T14:26:53.004Z",
+            "modified": "2023-07-01T14:27:40.949Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"email\": \"string\",\r\n  \"token\": \"string\"\r\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "c1d8d56b-85a4-4026-bc87-edd8b4273106",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/ResetPasswordByToken",
+            "url": "https://localhost:7276/api/v1/User/ResetPasswordByToken",
+            "method": "POST",
+            "sortNum": 29843.8,
+            "created": "2023-07-01T14:28:04.043Z",
+            "modified": "2023-07-01T14:28:29.042Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"email\": \"string\",\r\n  \"token\": \"string\",\r\n  \"newPassword\": \"string\"\r\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "44e8f0c9-05b7-42f1-b32e-1c0372b3e606",
+            "colId": "3bcb0e0b-574e-418d-93f5-f0c05c493ee2",
+            "containerId": "",
+            "name": "Auth/changepassword",
+            "url": "https://localhost:7276/api/v1/user/changepassword",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2023-06-29T16:44:33.908Z",
+            "modified": "2023-06-29T16:44:33.908Z",
+            "headers": [
+                {
+                    "name": "version",
+                    "value": "1"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"userId\": \"3\",\n  \"oldpassword\": \"bb1\",\n  \"newpassword\": \"bb2\"\n}",
+                "form": []
+            },
+            "tests": []
+        }
+    ]
+}
