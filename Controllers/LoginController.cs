@@ -35,7 +35,7 @@ namespace WebTemplate.Controllers
         }
 
         // To generate token
-        private string GenerateToken(UserModel user)
+        private string GenerateToken(LoginModel user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -54,7 +54,7 @@ namespace WebTemplate.Controllers
         }
 
         //To authenticate user
-        private UserModel? Authenticate(UserLogin userLogin)
+        private LoginModel? Authenticate(UserLogin userLogin)
         {
             var currentUser = UserConstants.Users.FirstOrDefault(x => x.Username.ToLower() ==
                 userLogin.Username.ToLower() && x.Password == userLogin.Password);

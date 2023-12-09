@@ -23,13 +23,13 @@ namespace WebTemplate.Controllers
             return null;
         }
 
-        private UserModel? GetCurrentUser()
+        private LoginModel? GetCurrentUser()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
                 var userClaims = identity.Claims;
-                return new UserModel
+                return new LoginModel
                 {
                     Username = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value!,
                     Role = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value!
