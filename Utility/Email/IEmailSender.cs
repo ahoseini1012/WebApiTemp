@@ -1,8 +1,8 @@
-using fetratgram_smh.Utility.Email;
+using LicenseServer.Utility.Email;
 using MailKit.Net.Smtp;
 using MimeKit;
 
-namespace fetratgram_smh.Utility
+namespace LicenseServer.Utility
 {
     public interface IEmailSender
     {

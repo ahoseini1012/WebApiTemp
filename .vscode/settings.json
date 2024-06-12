@@ -1,3 +1,6 @@
 {
-    "dotnet.defaultSolution": "WebTemplate.sln"
+    "dotnet.defaultSolution": "WebTemplate.sln",
+    "dataworkspace.excludedProjects": [
+        "db_project/DatabaseProjectFetrat.Zoghi/DatabaseProjectFetrat.Zoghi.sqlproj"
+    ]
 }

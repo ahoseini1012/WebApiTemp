@@ -1,0 +1,33 @@
+USE [Fetrat.Zoghi]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_getLogin]    Script Date: 6/29/2023 8:07:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 1402/03/24
+-- Description:	used for login by username and password
+-- =============================================
+ALTER PROCEDURE [dbo].[sp_getLogin]
+	@Email nvarchar(50),
+	@Password nvarchar(50),
+	@responseMessage bit =0 out
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	declare @userid int;
+	declare @salt nvarchar(36);
+	declare @userTable userTable
+	insert into @userTable
+	SELECT top 1 id,Guid,Username,Email,FirstName,LastName,MobileNumber,IsActive,IsVerifiedEmail
+		from Users where Email = @Email AND Password=HASHBYTES('SHA2_512', @Password + CAST (guid as nvarchar(150)))
+
+	if exists(SELECT top 1 * from @userTable)
+		begin
+		   SET @responseMessage=1  -- User successfully logged in
+		   select * from @userTable
+		end
+END

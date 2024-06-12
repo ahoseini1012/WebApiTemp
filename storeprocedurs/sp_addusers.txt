@@ -1,0 +1,45 @@
+USE [Fetrat.Zoghi]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_AddUsers]    Script Date: 6/29/2023 8:05:48 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 1402/03/22
+-- Description:	insert user details
+-- =============================================
+
+ALTER PROCEDURE [dbo].[SP_AddUsers]
+	@Username nvarchar(50),
+    @Password nvarchar(200), 
+    @FirstName NVARCHAR(50) = NULL, 
+    @LastName NVARCHAR(50) = NULL,
+	@MobileNumber NVARCHAR(50) = NULL,
+	@Email NVARCHAR(50) = NULL,
+	@IsVerifiedEmail bit null=0,
+	@IsActive bit null =1,
+    @responseMessage NVARCHAR(250) OUTPUT,
+	@returnToken int = 0 out
+AS
+declare @Guid UNIQUEIDENTIFIER = newid();
+
+begin
+	SET NOCOUNT ON
+    BEGIN TRY
+		begin tran
+        insert into dbo.[Users] (username, [password],[guid], FirstName, LastName, MobileNumber, Email, IsActive,IsVerifiedEmail)
+        values(@Username, HASHBYTES('SHA2_512', @Password + cast(@Guid as nvarchar(36))),@Guid, @FirstName, @LastName, @MobileNumber, @Email,@IsActive,@IsVerifiedEmail)
+        set @responseMessage = 'ok' 
+		set @returnToken = CAST(RAND()*1000000 as int);
+		declare @sendVerificationResponseMessage bit;
+		exec sp_SendVerificationEmail @Email , @returnToken ,@sendVerificationResponseMessage out			
+		commit tran
+    END TRY
+    BEGIN CATCH
+        SET @responseMessage=ERROR_MESSAGE() 
+		set @returnToken =0
+		rollback tran
+    END CATCH
+end

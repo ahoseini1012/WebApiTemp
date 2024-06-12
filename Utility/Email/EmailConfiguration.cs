@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace fetratgram_smh.Utility.Email
+namespace LicenseServer.Utility.Email
 {
     public class EmailConfiguration
     {

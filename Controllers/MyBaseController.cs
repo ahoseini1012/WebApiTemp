@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebTemplate.Controllers
+namespace LicenseServer.Controllers
 {
 
     [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]/[action]")]
+    //[Route("api/v{version:apiVersion}/[controller]/[action]")]
     // [Authorize]
     public class MyBaseController : ControllerBase
     {

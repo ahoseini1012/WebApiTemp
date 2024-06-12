@@ -1,0 +1,33 @@
+USE [Fetrat.Zoghi]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_VerifyEmail]    Script Date: 6/29/2023 8:09:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: <Create Date,,>
+-- Description:	insert verification record to EmailVerificationHistory
+-- =============================================
+ALTER PROCEDURE [dbo].[sp_VerifyEmail]
+	@Email nvarchar(50)=null,
+	@Token int,
+    @responseMessage bit OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	declare @verificationId bigint
+	select top 1 @verificationId=us.Id from Users us join EmailVerificationHistory ev on ev.Userid=us.Id 
+		where us.Email like @Email and ev.Token=@Token and GETDATE()<ev.expireDateTime order by ev.Id desc
+	if(@verificationId is not null) 
+		begin
+			begin tran
+				update Users set IsVerifiedEmail=1 where Id = @verificationId
+				update EmailVerificationHistory set IsBurned=1 where Userid=@verificationId
+				set @responseMessage = 1;
+			commit tran
+		end
+	else
+		set @responseMessage = 0;
+END

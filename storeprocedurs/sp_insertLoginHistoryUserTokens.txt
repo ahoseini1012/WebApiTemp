@@ -1,0 +1,34 @@
+USE [Fetrat.Zoghi]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_getLogin]    Script Date: 6/30/2023 7:13:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: 1402/04/09
+-- Description:	used for store refreshtoken and LoginHistory into database
+-- =============================================
+alter PROCEDURE [dbo].[sp_insertLoginHistoryUserTokens]
+	@Accesstoken nvarchar(50),
+	@RefreshToken nvarchar(50),
+	@UserId bigint,
+	@responseMessage bit =0 out
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	declare @isFirstLogin bit;
+	if exists(select top 1 * from UserTokens where UserId=@UserId) set @isFirstLogin=0 else set @isFirstLogin=1
+		begin
+			begin Tran
+				SET @responseMessage=1  -- User logging is successfully logged out
+				if(@isFirstLogin=1)
+					insert into UserTokens (UserId,RefreshToken,CreatedAt,IsValid) values(@userid,@RefreshToken,GETDATE(),1)
+				else
+					update UserTokens set RefreshToken=@RefreshToken , CreatedAt = GetDate(),IsValid=1 where UserId=@userid
+				insert into LoginHistory (userId,logInDateTime) values(@userid,GETDATE())
+			commit Tran
+		end
+END

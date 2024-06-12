@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace WebTemplate.DL
+namespace LicenseServer.DL
 {
     public class DBContext
     {
@@ -14,7 +12,7 @@ namespace WebTemplate.DL
         public DBContext(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("SqlConnection");
+            _connectionString = _configuration.GetConnectionString("SqlConnection")!;
         }
         public IDbConnection CreateConnection()
             => new SqlConnection(_connectionString);

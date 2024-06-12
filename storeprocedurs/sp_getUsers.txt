@@ -1,0 +1,33 @@
+USE [Fetrat.Zoghi]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_getUsers]    Script Date: 6/29/2023 8:07:28 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		a.hoseini1012@gmail.com
+-- Create date: <Create Date,,>
+-- Description:	get user
+-- =============================================
+ALTER PROCEDURE [dbo].[sp_getUsers]
+	@UserName nvarchar(50)=null,
+	@Email nvarchar(50)=null,
+	@FName nvarchar(50)=null,
+	@LName nvarchar(50)=null,
+    @responseMessage NVARCHAR(250) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	declare @SqlCmd nvarchar(max)='SELECT top 1 us.Id,us.username,us.FirstName,us.LastName,us.Email,us.MobileNumber,us.IsActive from Users us where '
+	if Len(@UserName)>0 begin set @sqlcmd =@sqlcmd + ' Username like N'''+ @Username + ''' and ' end
+	if LEN(@Email)>0 begin set @sqlcmd = @sqlcmd + ' Email like N'''+ @Email + ''' and ' end 
+	if LEN(@FName)>0 begin set @sqlcmd = @sqlcmd + ' FirstName like N'''+ @FName + ''' and ' end
+	if LEN(@LName)>0 begin set @sqlcmd = @sqlcmd + ' LastName like N'''+ @LName + ''' and ' end
+
+	set @sqlcmd = TRIM(' and ' from @sqlcmd)
+	
+	--declare @user
+	exec SP_ExecuteSQL @SqlCmd;
+	print(@@rowcount)
+END

@@ -1,15 +1,17 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using WebTemplate.DL;
-using WebTemplate.Utilities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using fetratgram_smh.Utility.Email;
-using fetratgram_smh.Utility;
+using LicenseServer.DL;
+using LicenseServer.Utilities;
+using LicenseServer.Utility.Email;
+using LicenseServer.Utility;
+using LicenseServer.Middleware;
+using Serilog;
+using LicenseServer.ThirdPartyServices;
+using LicenseServer.BL.Authentication;
+using LicenseServer.DL.Authentication;
 
 internal class Program
 {
@@ -17,17 +19,25 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        builder.Host.UseSerilog((ctx, lc) => lc
+            .WriteTo.Console()
+            .ReadFrom.Configuration(ctx.Configuration))
+            ;
+
         builder.Services.AddControllers();
         builder.Services.AddSingleton<DBContext>();
-        builder.Services.AddScoped<IUsers, Users>();
+        builder.Services.AddTransient<IThirdPartyServices, ThirdPartyServices>();
         builder.Services.AddTransient<IGenerateNewToken, GenerateNewToken>();
+        builder.Services.AddScoped<IAuthentication_BL,Authentication_BL>();
+        builder.Services.AddScoped<IAuthentication_DL,Authentication_DL>();
+        builder.Services.AddHttpClient();
+
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "FetratGram", Version = "v1" });
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Monitoring", Version = "v1" });
             options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
@@ -43,7 +53,7 @@ internal class Program
                     new OpenApiSecurityScheme {
                         Reference = new OpenApiReference {
                             Id = "Bearer",
-                                Type = ReferenceType.SecurityScheme
+                            Type = ReferenceType.SecurityScheme
                         }
                     },
                     new List < string > ()
@@ -51,9 +61,10 @@ internal class Program
             });
         });
 
+        
         // Email service configuration
         var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
-        builder.Services.AddSingleton(emailConfig);
+        builder.Services.AddSingleton(emailConfig!);
         builder.Services.AddScoped<IEmailSender, EmailSender>();
 
         //versioning
@@ -93,7 +104,6 @@ internal class Program
             };
         });
 
-
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("Policy1",
@@ -115,13 +125,11 @@ internal class Program
             app.UseSwaggerUI();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebTemplate v1"));
         }
-
         app.UseHttpsRedirection();
+        app.UseLoggingMiddleware();
         app.UseAuthentication();
         app.UseAuthorization();
-
         app.MapControllers();
-
         app.Run();
     }
 }
