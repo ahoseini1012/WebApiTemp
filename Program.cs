@@ -28,8 +28,10 @@ internal class Program
         builder.Services.AddSingleton<DBContext>();
         builder.Services.AddTransient<IThirdPartyServices, ThirdPartyServices>();
         builder.Services.AddTransient<IGenerateNewToken, GenerateNewToken>();
-        builder.Services.AddScoped<IAuthentication_BL,Authentication_BL>();
-        builder.Services.AddScoped<IAuthentication_DL,Authentication_DL>();
+        builder.Services.AddScoped<IAuthentication_BL, Authentication_BL>();
+        builder.Services.AddScoped<IAuthentication_DL, Authentication_DL>();
+        builder.Services.AddScoped<IProject_BL, Project_BL>();
+        builder.Services.AddScoped<IProject_DL, Project_DL>();
         builder.Services.AddHttpClient();
 
 
@@ -61,7 +63,7 @@ internal class Program
             });
         });
 
-        
+
         // Email service configuration
         var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
         builder.Services.AddSingleton(emailConfig!);

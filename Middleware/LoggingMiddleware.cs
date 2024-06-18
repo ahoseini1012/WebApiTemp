@@ -17,7 +17,7 @@ namespace LicenseServer.Middleware
             _next = next;
             _logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.Seq("http://45.149.79.174:5341/")
+                .WriteTo.Seq("http://localhost:5341/")
                 .CreateLogger();
         }
         public async Task Invoke(HttpContext httpContext)
@@ -25,36 +25,55 @@ namespace LicenseServer.Middleware
             bool requestHasBody = httpContext.Request.ContentLength > 0;
             if (requestHasBody)
             {
-                var requestBody = await GetRawBodyAsync(httpContext.Request, Encoding.UTF8);
-                var requestEnriched = Log
-                    .ForContext("Url", httpContext.Request.Path)
-                    .ForContext("RequestBody", requestBody);
-                requestEnriched.Information(httpContext.Request.Path);
+                try
+                {
+                    httpContext.Request.EnableBuffering();
+                    string requestBody = await new StreamReader(httpContext.Request.Body, Encoding.UTF8).ReadToEndAsync();
+                    httpContext.Request.Body.Position = 0;
+                    var requestEnriched = Log
+                        .ForContext("ClientIP", httpContext.Connection.RemoteIpAddress)
+                        .ForContext("RequestBody", requestBody);
+                    requestEnriched.Information(httpContext.Request.Path);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception reading request: {ex.Message}");
+                }
 
-                await _next(httpContext); // calling next middleware
+                Stream originalBody = httpContext.Response.Body;
+                try
+                {
+                    using var memStream = new MemoryStream();
+                    httpContext.Response.Body = memStream;
 
-                HttpResponse response = httpContext.Response;
-                var originalResponseBody = response.Body;
-                using var newResponseBody = new MemoryStream();
-                response.Body = newResponseBody;
-                newResponseBody.Seek(0, SeekOrigin.Begin);
-                var responseBody =
-                    await new StreamReader(response.Body).ReadToEndAsync();
-                var responseEnriched = Log
-                    .ForContext("Url", httpContext.Request.Path)
-                    .ForContext("responseBody", responseBody);
-                responseEnriched.Information(httpContext.Request.Path);
+                    // call to the following middleware 
+                    // response should be produced by one of the following middlewares
+                    await _next(httpContext);
 
-                newResponseBody.Seek(0, SeekOrigin.Begin);
-                await newResponseBody.CopyToAsync(originalResponseBody);
-            }else
+                    memStream.Position = 0;
+                    string responseBody = new StreamReader(memStream).ReadToEnd();
+
+                    memStream.Position = 0;
+                    await memStream.CopyToAsync(originalBody);
+                    // Console.WriteLine(responseBody);
+                        var responseEnriched = Log
+                            .ForContext("ClientIP", httpContext.Connection.RemoteIpAddress)
+                            .ForContext("ResponseBody", responseBody);
+                        responseEnriched.Information(httpContext.Request.Path);
+                }
+                finally
+                {
+                    httpContext.Response.Body = originalBody;
+                }
+            }
+            else
             {
                 await _next(httpContext); // calling next middleware
             }
 
         }
 
-        public static async Task<string> GetRawBodyAsync(HttpRequest request, Encoding encoding)
+        public static async Task<string> GetRawRequestBodyAsync(HttpRequest request, Encoding encoding)
         {
             if (!request.Body.CanSeek)
             {
@@ -68,7 +87,7 @@ namespace LicenseServer.Middleware
         }
     }
 
-    
+
     // Extension method used to add the middleware to the HTTP request pipeline.
     public static class LoggingMiddlewareExtensions
     {

@@ -13,8 +13,6 @@ namespace LicenseServer.Controllers.V1
         {
             _config = config;
         }
-
-        
     }
 
 }

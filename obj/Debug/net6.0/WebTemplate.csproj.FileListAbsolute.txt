@@ -889,9 +889,6 @@ C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\Microsoft.Win32.
 C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\MimeKit.dll
 C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\NETCore.MailKit.dll
 C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\Newtonsoft.Json.dll
-C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\NLog.dll
-C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\NLog.Extensions.Logging.dll
-C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\NLog.Web.AspNetCore.dll
 C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\OpenGraphNet.dll
 C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\BouncyCastle.Crypto.dll
 C:\Users\h.hosseini\Desktop\Taly\LicenseServer\bin\Debug\net6.0\Seq.Extensions.Logging.dll

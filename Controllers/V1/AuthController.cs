@@ -13,16 +13,10 @@ namespace LicenseServer.Controllers.V1
         private readonly IConfiguration _config;
         private readonly IAuthentication_BL _auth;
 
-        public AuthController(IConfiguration config,IAuthentication_BL authentication)
+        public AuthController(IConfiguration config, IAuthentication_BL authentication)
         {
             _config = config;
             _auth = authentication;
-        }
-
-        [HttpPost]
-        public async Task<Login.response> Register(Login model)
-        {
-            return new Login.response();
         }
 
         [HttpPost]
