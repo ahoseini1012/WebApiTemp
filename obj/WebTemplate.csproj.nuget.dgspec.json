@@ -1,32 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\h.hosseini\\Desktop\\Taly\\LicenseServer\\WebTemplate.csproj": {}
+    "/Users/amir/Desktop/khademin/API/WebTemplate.csproj": {}
   },
   "projects": {
-    "C:\\Users\\h.hosseini\\Desktop\\Taly\\LicenseServer\\WebTemplate.csproj": {
+    "/Users/amir/Desktop/khademin/API/WebTemplate.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\h.hosseini\\Desktop\\Taly\\LicenseServer\\WebTemplate.csproj",
+        "projectUniqueName": "/Users/amir/Desktop/khademin/API/WebTemplate.csproj",
         "projectName": "WebTemplate",
-        "projectPath": "C:\\Users\\h.hosseini\\Desktop\\Taly\\LicenseServer\\WebTemplate.csproj",
-        "packagesPath": "C:\\Users\\h.hosseini\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\h.hosseini\\Desktop\\Taly\\LicenseServer\\obj\\",
+        "projectPath": "/Users/amir/Desktop/khademin/API/WebTemplate.csproj",
+        "packagesPath": "/Users/amir/.nuget/packages/",
+        "outputPath": "/Users/amir/Desktop/khademin/API/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\h.hosseini\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/amir/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -44,7 +37,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net6.0": {
@@ -57,6 +51,14 @@
             "FluentEmail.Smtp": {
               "target": "Package",
               "version": "[3.0.2, )"
+            },
+            "HttpToSocks5Proxy": {
+              "target": "Package",
+              "version": "[1.4.0, )"
+            },
+            "JK.BingX.Net": {
+              "target": "Package",
+              "version": "[2.1.0, )"
             },
             "Microsoft.AspNetCore.Authentication": {
               "target": "Package",
@@ -182,7 +184,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.300/RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using MihaZupan;
 
-namespace LicenseServer.Controllers.V1
+namespace WebTemplate.Controllers.V1
 {
     [ApiVersion("1")]
     [ApiController]
@@ -12,6 +13,23 @@ namespace LicenseServer.Controllers.V1
         public HomeController(IConfiguration config)
         {
             _config = config;
+        }
+
+        [HttpGet]
+        public async Task testIp()
+        {
+            var proxy = new HttpToSocks5Proxy("127.0.0.1", 8888);
+
+            var handler = new HttpClientHandler
+            {
+                Proxy = proxy,
+                UseProxy = true
+            };
+
+            using var client = new HttpClient(handler);
+            var response = await client.GetAsync("https://api.ipify.org");
+            var ip = await response.Content.ReadAsStringAsync();
+            System.Console.WriteLine(ip);
         }
     }
 

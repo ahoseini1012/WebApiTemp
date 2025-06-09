@@ -12,11 +12,17 @@ using Serilog;
 using LicenseServer.ThirdPartyServices;
 using LicenseServer.BL.Authentication;
 using LicenseServer.DL.Authentication;
+using MihaZupan;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
+
+
+
+
+
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Host.UseSerilog((ctx, lc) => lc
