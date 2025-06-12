@@ -17,7 +17,10 @@ namespace LicenseServer.Models
         ChangeProfile_error = 10414,
         UploadAvatar_error = 10415,
         FileNotFount_error = 10416,
-        DB_error=10417,
-        Duplicated_Record_error=10418
+        DB_error = 10417,
+        Duplicated_Record_error = 10418,
+        Sending_otp = 10419,
+        FillForm = 10420,
+        Invalid_MobileNo = 10421,
     }
 }

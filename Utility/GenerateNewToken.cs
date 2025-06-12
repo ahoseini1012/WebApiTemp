@@ -9,7 +9,7 @@ namespace LicenseServer.Utilities
 {
     public interface IGenerateNewToken
     {
-        public Login.response NewToken(int guid);
+        public LoginByUsername.response NewToken(int guid);
     }
     public class GenerateNewToken : IGenerateNewToken
     {
@@ -20,7 +20,7 @@ namespace LicenseServer.Utilities
             _config = configuration;
             // _userid=id;
         }
-        public Login.response NewToken(int _userid)
+        public LoginByUsername.response NewToken(int _userid)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]!);
@@ -38,7 +38,7 @@ namespace LicenseServer.Utilities
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return new Login.response()
+            return new LoginByUsername.response()
             {
                 accesstoken = tokenHandler.WriteToken(token),
                 refreshtoken = GenerateRefreshToken()

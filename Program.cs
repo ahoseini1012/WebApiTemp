@@ -18,11 +18,6 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-
-
-
-
-
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Host.UseSerilog((ctx, lc) => lc

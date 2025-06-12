@@ -2,7 +2,7 @@ using LicenseServer.Models.DB;
 
 namespace LicenseServer.Models.Authentication
 {
-    public class Login
+    public class LoginByUsername
     {
         public class request
         {
@@ -10,10 +10,24 @@ namespace LicenseServer.Models.Authentication
             public string password { get; set; } = string.Empty;
         }
 
-        public class response:User
+        public class response 
         {
             public string accesstoken { get; set; } = string.Empty;
             public string refreshtoken { get; set; } = string.Empty;
+        }
+    }
+
+    public class LoginByMobileNo
+    {
+        public class Request
+        {
+            public string Mobile { get; set; } = string.Empty;
+        }
+
+        public class Response 
+        {
+            public string Accesstoken { get; set; } = string.Empty;
+            public string Refreshtoken { get; set; } = string.Empty;
         }
     }
 }
